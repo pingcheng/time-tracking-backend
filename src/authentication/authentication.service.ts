@@ -18,6 +18,7 @@ export class AuthenticationService {
 
     const payload = {
       sub: user.id,
+      email: user.email,
       username: user.username,
     };
 
