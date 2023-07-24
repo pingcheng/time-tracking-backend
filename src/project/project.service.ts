@@ -32,4 +32,26 @@ export class ProjectService {
 
     return project;
   }
+
+  async queryByUser(userId: number, options?: QueryByUserOptions) {
+    return this.prismaService.project.findMany({
+      where: {
+        userId,
+      },
+      skip: options?.pagination?.skip,
+      take: options?.pagination?.take ?? 10,
+      orderBy: {
+        id: 'desc',
+      },
+    });
+  }
 }
+
+export type QueryByUserOptions = {
+  pagination?: PaginationOptions;
+};
+
+export type PaginationOptions = {
+  take: number;
+  skip?: number;
+};
