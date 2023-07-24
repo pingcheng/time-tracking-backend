@@ -2,6 +2,7 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { JwtAuthPayload } from './authentication.type';
 
 @Injectable()
 export class AuthenticationService {
@@ -29,7 +30,7 @@ export class AuthenticationService {
       throw new UnauthorizedException();
     }
 
-    const payload = {
+    const payload: JwtAuthPayload = {
       sub: user.id,
       email: user.email,
       username: user.username,

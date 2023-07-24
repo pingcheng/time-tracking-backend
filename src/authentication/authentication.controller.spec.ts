@@ -3,6 +3,7 @@ import { AuthenticationController } from './authentication.controller';
 import { AuthenticationModule } from './authentication.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { UsersModule } from '../users/users.module';
 
 describe('AuthenticationController', () => {
   let controller: AuthenticationController;
@@ -15,6 +16,7 @@ describe('AuthenticationController', () => {
           isGlobal: true,
         }),
         JwtModule,
+        UsersModule,
       ],
       controllers: [AuthenticationController],
     }).compile();

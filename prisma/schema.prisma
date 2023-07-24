@@ -11,9 +11,25 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  username String  @unique
-  name     String?
-  password String?
+  id         Int       @id @default(autoincrement())
+  email      String    @unique
+  username   String    @unique
+  name       String?
+  password   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  // relations
+  Project    Project[]
+}
+
+model Project {
+  id         Int       @id @default(autoincrement())
+  userId    Int
+  name       String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  // relations
+  owner User @relation(fields: [userId], references: [id])
 }
