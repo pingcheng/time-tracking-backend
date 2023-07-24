@@ -12,10 +12,10 @@ import {
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { AuthenticationGuard } from './authentication.guard';
-import { Auth } from './decorators/auth.decorator';
-import { JwtAuthPayload } from './authentication.type';
 import { UsersService } from '../users/users.service';
 import { UserEntity } from '../users/entities/user.entity';
+import { Principal } from './decorators/principal.decorator';
+import { User } from '@prisma/client';
 
 @Controller('authentication')
 export class AuthenticationController {
@@ -36,13 +36,7 @@ export class AuthenticationController {
   @Get('profile')
   @UseGuards(AuthenticationGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  async getProfile(@Auth() auth: JwtAuthPayload) {
-    const user = await this.userService.findOne(auth.username);
-
-    if (!user) {
-      throw new NotFoundException();
-    }
-
+  async getProfile(@Principal() user: User) {
     return new UserEntity(user);
   }
 }

@@ -6,12 +6,14 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthenticationGuard implements CanActivate {
   constructor(
     private configService: ConfigService,
     private jwtService: JwtService,
+    private usersService: UsersService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -24,9 +26,14 @@ export class AuthenticationGuard implements CanActivate {
     }
 
     try {
-      request['auth'] = await this.jwtService.verifyAsync(token, {
+      const jwtTokenPayload = await this.jwtService.verifyAsync(token, {
         secret,
       });
+
+      request['auth'] = jwtTokenPayload;
+      request['user'] = await this.usersService.findOne(
+        jwtTokenPayload.username,
+      );
     } catch {
       throw new UnauthorizedException();
     }

@@ -11,11 +11,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
-import { Auth } from '../authentication/decorators/auth.decorator';
-import { JwtAuthPayload } from '../authentication/authentication.type';
 import { AuthenticationGuard } from '../authentication/authentication.guard';
 import { ProjectEntity } from './entities/project.entity';
 import { inRange } from '../utils/inRange';
+import { Principal } from '../authentication/decorators/principal.decorator';
+import { User } from '@prisma/client';
 
 @Controller('project')
 export class ProjectController {
@@ -32,7 +32,7 @@ export class ProjectController {
   @UseInterceptors(ClassSerializerInterceptor)
   async getById(
     @Param('id', ParseIntPipe) id: number,
-    @Auth() auth: JwtAuthPayload,
+    @Principal() user: User,
   ) {
     const project = await this.projectService.findById(id);
 
@@ -41,7 +41,7 @@ export class ProjectController {
     }
 
     // check owner
-    if (project.owner.id !== auth.sub) {
+    if (project.owner.id !== user.id) {
       throw new NotFoundException();
     }
 
@@ -52,14 +52,14 @@ export class ProjectController {
   @UseGuards(AuthenticationGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   async listOwned(
-    @Auth() auth: JwtAuthPayload,
+    @Principal() user: User,
     @Query('take', new ParseIntPipe({ optional: true })) take = 10,
     @Query('skip', new ParseIntPipe({ optional: true })) skip = 0,
   ) {
     const filteredTake = inRange(take, 0, ProjectController.MAX_TAKE);
     const filteredSkip = inRange(skip, 0, Number.MAX_SAFE_INTEGER);
 
-    const projects = await this.projectService.queryByUser(auth.sub, {
+    const projects = await this.projectService.queryByUser(user.id, {
       pagination: {
         take: filteredTake,
         skip: filteredSkip,
