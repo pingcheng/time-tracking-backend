@@ -32,7 +32,7 @@ export class ProjectController {
     }
 
     // check owner
-    if (project.userId !== auth.sub) {
+    if (project.owner.id !== auth.sub) {
       throw new NotFoundException();
     }
 

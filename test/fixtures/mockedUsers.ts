@@ -9,3 +9,5 @@ export const mockedUser: User = {
   createdAt: new Date(),
   updatedAt: new Date(),
 };
+
+export const mockedUserPassword = 'password';

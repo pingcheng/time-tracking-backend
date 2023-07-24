@@ -5,6 +5,8 @@ export const mockedPrismaServiceFactory: OverrideByFactoryOptions = {
     user: {
       findUnique: jest.fn(),
     },
-    project: jest.fn(),
+    project: {
+      findUnique: jest.fn(),
+    },
   }),
 };
