@@ -1,5 +1,4 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { PrismaService } from '../../src/prisma/prisma.service';
 import { mockedUser, mockedUserPassword } from '../fixtures/mockedUsers';
 import * as request from 'supertest';
 import { createTestingApp } from '../fixtures/createTestingApp';
@@ -7,17 +6,10 @@ import { getAccessToken } from '../fixtures/getAccessToken';
 
 describe('AuthenticationController (e2e) - profile', () => {
   let app: INestApplication;
-  let prismaService: PrismaService;
   let accessToken: string;
 
   beforeEach(async () => {
-    jest.restoreAllMocks();
-
     app = await createTestingApp();
-    prismaService = app.get(PrismaService);
-
-    jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockedUser);
-
     accessToken = await getAccessToken(
       app,
       mockedUser.username,

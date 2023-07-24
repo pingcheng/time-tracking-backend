@@ -6,7 +6,6 @@ import {
   mockedAnotherProject,
   mockedAnotherProjectWithOwner,
   mockedProject,
-  mockedProjectWithOwner,
 } from '../fixtures/mockedProject';
 import * as request from 'supertest';
 import { getAccessToken } from '../fixtures/getAccessToken';
@@ -22,8 +21,6 @@ describe('ProjectController (e2e) - get', () => {
     app = await createTestingApp();
     prismaService = app.get(PrismaService);
 
-    jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockedUser);
-
     accessToken = await getAccessToken(
       app,
       mockedUser.username,
@@ -33,12 +30,6 @@ describe('ProjectController (e2e) - get', () => {
 
   describe('/project/:id (GET)', () => {
     it('should return project info when all correct', async () => {
-      // bad workaround
-      // https://github.com/prisma/prisma/discussions/7084
-      jest
-        .spyOn(prismaService.project, 'findUnique')
-        .mockResolvedValue(mockedProjectWithOwner);
-
       return request(app.getHttpServer())
         .get(`/project/${mockedProject.id}`)
         .set('Authorization', `Bearer ${accessToken}`)

@@ -1,20 +1,13 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { PrismaService } from '../../src/prisma/prisma.service';
-import { mockedUser } from '../fixtures/mockedUsers';
+import { mockedUser, mockedUserPassword } from '../fixtures/mockedUsers';
 import { createTestingApp } from '../fixtures/createTestingApp';
 
 describe('AuthenticationController (e2e) - login', () => {
   let app: INestApplication;
-  let prismaService: PrismaService;
 
   beforeEach(async () => {
-    jest.restoreAllMocks();
-
     app = await createTestingApp();
-    prismaService = app.get(PrismaService);
-
-    jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockedUser);
   });
 
   it('/authentication/login (POST) - successful login', async () => {
@@ -22,7 +15,7 @@ describe('AuthenticationController (e2e) - login', () => {
       .post('/authentication/login')
       .send({
         username: mockedUser.username,
-        password: 'password',
+        password: mockedUserPassword,
       })
       .expect(HttpStatus.OK)
       .then((response) => {
