@@ -7,7 +7,7 @@ export class UsersService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async findOne(username: string): Promise<User | null> {
-    return this.prismaService.user.findFirst({
+    return this.prismaService.user.findUnique({
       where: {
         username,
       },
