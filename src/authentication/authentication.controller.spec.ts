@@ -1,14 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthenticationController } from './authentication.controller';
-import { UsersModule } from '../users/users.module';
 import { AuthenticationModule } from './authentication.module';
+import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 
 describe('AuthenticationController', () => {
   let controller: AuthenticationController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [UsersModule, AuthenticationModule],
+      imports: [
+        AuthenticationModule,
+        ConfigModule.forRoot({
+          isGlobal: true,
+        }),
+        JwtModule,
+      ],
       controllers: [AuthenticationController],
     }).compile();
 
