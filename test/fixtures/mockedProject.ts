@@ -1,5 +1,5 @@
 import { Project } from '@prisma/client';
-import { mockedUser } from './mockedUsers';
+import { mockedAnotherUser, mockedUser } from './mockedUsers';
 
 export const mockedProject: Project = {
   id: 1,
@@ -12,4 +12,17 @@ export const mockedProject: Project = {
 export const mockedProjectWithOwner = {
   ...mockedProject,
   owner: mockedUser,
+};
+
+export const mockedAnotherProject: Project = {
+  id: 2,
+  userId: 2,
+  name: 'Another Testing Project',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+export const mockedAnotherProjectWithOwner = {
+  ...mockedAnotherProject,
+  owner: mockedAnotherUser,
 };
