@@ -25,6 +25,8 @@ jobs:
 
   e2e-test:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "mysql://root:password@localhost:3306/timetracking"
     services:
       mysql:
         image: mysql:8
@@ -48,5 +50,8 @@ jobs:
       - name: Install the dependencies
         run: npm install
 
-      - name: Unit Test
+      - name: Migrate database
+        run: npx prisma deploy
+
+      - name: E2E Test
         run: npm run test:e2e
