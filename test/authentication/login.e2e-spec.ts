@@ -1,6 +1,5 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { mockedUser, mockedUserPassword } from '../fixtures/mockedUsers';
 import { createTestingApp } from '../fixtures/createTestingApp';
 
 describe('AuthenticationController (e2e) - login', () => {
@@ -14,8 +13,8 @@ describe('AuthenticationController (e2e) - login', () => {
     return request(app.getHttpServer())
       .post('/authentication/login')
       .send({
-        username: mockedUser.username,
-        password: mockedUserPassword,
+        username: 'user1',
+        password: 'password',
       })
       .expect(HttpStatus.OK)
       .then((response) => {
@@ -27,7 +26,7 @@ describe('AuthenticationController (e2e) - login', () => {
     return request(app.getHttpServer())
       .post('/authentication/login')
       .send({
-        username: mockedUser.username,
+        username: 'user1',
         password: 'wrong password',
       })
       .expect(HttpStatus.UNAUTHORIZED);

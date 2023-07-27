@@ -1,5 +1,4 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { mockedUser, mockedUserPassword } from '../fixtures/mockedUsers';
 import * as request from 'supertest';
 import { createTestingApp } from '../fixtures/createTestingApp';
 import { getAccessToken } from '../fixtures/getAccessToken';
@@ -10,11 +9,7 @@ describe('AuthenticationController (e2e) - profile', () => {
 
   beforeEach(async () => {
     app = await createTestingApp();
-    accessToken = await getAccessToken(
-      app,
-      mockedUser.username,
-      mockedUserPassword,
-    );
+    accessToken = await getAccessToken(app, 'user1', 'password');
   });
 
   it('/authentication/profile (GET) - successful', async () => {
@@ -23,10 +18,9 @@ describe('AuthenticationController (e2e) - profile', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(200)
       .then((response) => {
-        expect(response.body.id).toEqual(mockedUser.id);
-        expect(response.body.email).toEqual(mockedUser.email);
-        expect(response.body.username).toEqual(mockedUser.username);
-        expect(response.body.name).toEqual(mockedUser.name);
+        expect(response.body.email).toEqual('user1@sample.com');
+        expect(response.body.username).toEqual('user1');
+        expect(response.body.name).toEqual('User 1');
         expect(response.body).not.toHaveProperty('password');
       });
   });

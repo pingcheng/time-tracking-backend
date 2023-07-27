@@ -1,12 +1,6 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import { createTestingApp } from '../fixtures/createTestingApp';
-import { mockedUser, mockedUserPassword } from '../fixtures/mockedUsers';
-import {
-  mockedAnotherProject,
-  mockedAnotherProjectWithOwner,
-  mockedProject,
-} from '../fixtures/mockedProject';
 import * as request from 'supertest';
 import { getAccessToken } from '../fixtures/getAccessToken';
 
@@ -21,31 +15,27 @@ describe('ProjectController (e2e) - get', () => {
     app = await createTestingApp();
     prismaService = app.get(PrismaService);
 
-    accessToken = await getAccessToken(
-      app,
-      mockedUser.username,
-      mockedUserPassword,
-    );
+    accessToken = await getAccessToken(app, 'user1', 'password');
   });
 
   describe('/project/:id (GET)', () => {
     it('should return project info when all correct', async () => {
       return request(app.getHttpServer())
-        .get(`/project/${mockedProject.id}`)
+        .get(`/project/1`) // need to update
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(HttpStatus.OK)
         .then((response) => {
-          expect(response.body.id).toEqual(mockedProject.id);
-          expect(response.body.name).toEqual(mockedProject.name);
-          expect(response.body.owner.id).toEqual(mockedUser.id);
-          expect(response.body.owner.name).toEqual(mockedUser.name);
-          expect(response.body.owner.email).toEqual(mockedUser.email);
+          expect(response.body.id).toEqual(1);
+          expect(response.body.name).toEqual('Project 1');
+          expect(response.body.owner.id).toEqual(1);
+          expect(response.body.owner.name).toEqual('User 1');
+          expect(response.body.owner.email).toEqual('user1@sample.com');
         });
     });
 
     it('should return 401 when no access token', async () => {
       return request(app.getHttpServer())
-        .get(`/project/${mockedProject.id}`)
+        .get(`/project/1`)
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
@@ -59,12 +49,8 @@ describe('ProjectController (e2e) - get', () => {
     });
 
     it('should return 404 when load a project does not belong to you', async () => {
-      jest
-        .spyOn(prismaService.project, 'findUnique')
-        .mockResolvedValue(mockedAnotherProjectWithOwner);
-
       return request(app.getHttpServer())
-        .get(`/project/${mockedAnotherProject.id}`)
+        .get(`/project/2`)
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(HttpStatus.NOT_FOUND);
     });

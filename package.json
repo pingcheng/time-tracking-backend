@@ -17,8 +17,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "seed": "ts-node prisma/seed.ts"
+    "test:e2e": "npm run seed:e2e && jest --config ./test/jest-e2e.json",
+    "seed": "ts-node prisma/seed.ts",
+    "seed:e2e": "npx prisma migrate reset -f && ts-node prisma/seed.e2e.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
