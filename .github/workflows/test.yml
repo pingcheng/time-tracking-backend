@@ -51,7 +51,7 @@ jobs:
         run: npm install
 
       - name: Migrate database
-        run: npx prisma deploy
+        run: npx prisma migrate deploy
 
       - name: E2E Test
         run: npm run test:e2e
