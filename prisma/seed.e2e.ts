@@ -31,8 +31,15 @@ async function main() {
 
   await prisma.project.create({
     data: {
-      userId: user2.id,
+      userId: user1.id,
       name: 'Project 2',
+    },
+  });
+
+  await prisma.project.create({
+    data: {
+      userId: user2.id,
+      name: 'Project 3',
     },
   });
 }

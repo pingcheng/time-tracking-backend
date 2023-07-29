@@ -43,6 +43,9 @@ export class ProjectService {
       orderBy: {
         id: 'desc',
       },
+      include: {
+        owner: true,
+      },
     });
   }
 }
