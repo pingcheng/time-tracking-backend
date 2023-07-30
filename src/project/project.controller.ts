@@ -6,6 +6,7 @@ import {
   NotFoundException,
   Param,
   ParseIntPipe,
+  Post,
   Query,
   UseGuards,
   UseInterceptors,
@@ -66,5 +67,11 @@ export class ProjectController {
       },
     });
     return projects.map((project) => new ProjectEntity(project));
+  }
+
+  @Post('/')
+  @UseGuards(AuthenticationGuard)
+  async create() {
+    return undefined;
   }
 }
