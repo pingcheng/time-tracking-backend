@@ -18,6 +18,7 @@ import { ProjectEntity } from './entities/project.entity';
 import { inRange } from '../utils/inRange';
 import { Principal } from '../authentication/decorators/principal.decorator';
 import { User } from '@prisma/client';
+import { CreateProjectDto } from './validators/CreateProjectDto';
 
 @Controller('project')
 export class ProjectController {
@@ -72,12 +73,16 @@ export class ProjectController {
 
   @Post('/')
   @UseGuards(AuthenticationGuard)
-  async create(@Principal() user: User, @Body() createOrderDto: any) {
-    const projectId = await this.projectService.create({
-      name: createOrderDto.name,
+  @UseInterceptors(ClassSerializerInterceptor)
+  async create(
+    @Principal() user: User,
+    @Body() createProjectDto: CreateProjectDto,
+  ) {
+    const project = await this.projectService.create({
+      name: createProjectDto.name,
       userId: user.id,
     });
 
-    return await this.projectService.findById(projectId);
+    return new ProjectEntity(project);
   }
 }

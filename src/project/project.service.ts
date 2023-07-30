@@ -50,18 +50,16 @@ export class ProjectService {
     });
   }
 
-  async create({ name, userId }: CreateProjectDto): Promise<number> {
-    const created = await this.prismaService.project.create({
+  async create({ name, userId }: CreateProjectDto) {
+    return this.prismaService.project.create({
       data: {
         name,
         userId,
       },
-      select: {
-        id: true,
+      include: {
+        owner: true,
       },
     });
-
-    return created.id;
   }
 }
 

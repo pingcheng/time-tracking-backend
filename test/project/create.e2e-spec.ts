@@ -47,5 +47,23 @@ describe('ProjectController (e2e) - create', () => {
           expect(project.name).toEqual(name);
         });
     });
+
+    it.each([
+      [undefined],
+      [
+        {
+          name: 1,
+        },
+      ],
+      [{ name: false }],
+      [{ name: '' }],
+      ,
+    ])(`should return 400 when request is "%s"`, async (payload) => {
+      return request(app.getHttpServer())
+        .post('/project')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send(payload)
+        .expect(HttpStatus.BAD_REQUEST);
+    });
   });
 });
