@@ -3,6 +3,7 @@ import { createTestingApp } from '../fixtures/createTestingApp';
 import { getAccessToken } from '../fixtures/getAccessToken';
 import { testUser1 } from '../fixtures/users';
 import * as request from 'supertest';
+import { getProjectById, getUserByUsername } from '../fixtures/query';
 
 describe('ProjectController (e2e) - create', () => {
   let app: INestApplication;
@@ -19,6 +20,32 @@ describe('ProjectController (e2e) - create', () => {
       return request(app.getHttpServer())
         .post('/project')
         .expect(HttpStatus.UNAUTHORIZED);
+    });
+
+    it('should be able to create a project when request is correct', async () => {
+      const name = 'My new created project - ' + new Date().valueOf();
+      const user = await getUserByUsername(testUser1.username);
+      return request(app.getHttpServer())
+        .post('/project')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          name,
+        })
+        .expect(HttpStatus.CREATED)
+        .then((response) => {
+          expect(response.body.id).toBeDefined();
+          expect(response.body.name).toEqual(name);
+          expect(response.body.owner.id).toEqual(user.id);
+          expect(response.body.owner.name).toEqual(user.name);
+          expect(response.body.owner.email).toEqual(user.email);
+          return response;
+        })
+        .then(async (response) => {
+          // check db with id
+          const projectId = response.body.id;
+          const project = await getProjectById(projectId);
+          expect(project.name).toEqual(name);
+        });
     });
   });
 });

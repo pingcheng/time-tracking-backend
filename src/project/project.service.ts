@@ -4,6 +4,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateProjectDto } from './project.type';
 
 @Injectable()
 export class ProjectService {
@@ -47,6 +48,20 @@ export class ProjectService {
         owner: true,
       },
     });
+  }
+
+  async create({ name, userId }: CreateProjectDto): Promise<number> {
+    const created = await this.prismaService.project.create({
+      data: {
+        name,
+        userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    return created.id;
   }
 }
 

@@ -14,6 +14,18 @@ export async function getUserByUsername(username: string): Promise<User> {
   return user;
 }
 
+export async function getProjectById(id: number) {
+  const project = await prismaClient.project.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!project) throw new Error(`Cannot find project with id - ${id}`);
+
+  return project;
+}
+
 export async function listProjectsByUserId(id: number) {
   return prismaClient.project.findMany({
     where: {

@@ -1,4 +1,5 @@
 import {
+  Body,
   ClassSerializerInterceptor,
   Controller,
   Get,
@@ -71,7 +72,12 @@ export class ProjectController {
 
   @Post('/')
   @UseGuards(AuthenticationGuard)
-  async create() {
-    return undefined;
+  async create(@Principal() user: User, @Body() createOrderDto: any) {
+    const projectId = await this.projectService.create({
+      name: createOrderDto.name,
+      userId: user.id,
+    });
+
+    return await this.projectService.findById(projectId);
   }
 }
