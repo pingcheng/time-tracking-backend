@@ -4,6 +4,7 @@ import { getAccessToken } from '../fixtures/getAccessToken';
 import { testUser1 } from '../fixtures/users';
 import * as request from 'supertest';
 import { getProjectById, getUserByUsername } from '../fixtures/query';
+import { projectSchema } from '../fixtures/schema/schema';
 
 describe('ProjectController (e2e) - create', () => {
   let app: INestApplication;
@@ -33,6 +34,7 @@ describe('ProjectController (e2e) - create', () => {
         })
         .expect(HttpStatus.CREATED)
         .then((response) => {
+          expect(response.body).toMatchSchema(projectSchema);
           expect(response.body.id).toBeDefined();
           expect(response.body.name).toEqual(name);
           expect(response.body.owner.id).toEqual(user.id);

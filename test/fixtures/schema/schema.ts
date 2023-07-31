@@ -18,3 +18,24 @@ export const profileSchema: JSONSchemaType<Profile> = {
   },
   additionalProperties: false,
 };
+
+interface Project {
+  id: number;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  owner: Profile;
+}
+
+export const projectSchema: JSONSchemaType<Project> = {
+  type: 'object',
+  required: ['id', 'name', 'createdAt', 'updatedAt', 'owner'],
+  properties: {
+    id: { type: 'integer' },
+    name: { type: 'string' },
+    createdAt: { type: 'string' },
+    updatedAt: { type: 'string' },
+    owner: profileSchema,
+  },
+  additionalProperties: false,
+};

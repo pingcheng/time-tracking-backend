@@ -4,6 +4,7 @@ import { getAccessToken } from '../fixtures/getAccessToken';
 import { testUser1 } from '../fixtures/users';
 import { getUserByUsername, listProjectsByUserId } from '../fixtures/query';
 import * as request from 'supertest';
+import { projectSchema } from '../fixtures/schema/schema';
 
 describe('ProjectController (e2e) - list', () => {
   let app: INestApplication;
@@ -32,6 +33,8 @@ describe('ProjectController (e2e) - list', () => {
               (project) => project.id === receivedProject.id,
             );
             expect(expectedProject).toBeDefined();
+
+            expect(receivedProject).toMatchSchema(projectSchema);
             expect(receivedProject.name).toEqual(expectedProject?.name);
             expect(receivedProject.createdAt).toEqual(
               expectedProject?.createdAt.toISOString(),

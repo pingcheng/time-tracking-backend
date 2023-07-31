@@ -4,6 +4,7 @@ import * as request from 'supertest';
 import { getAccessToken } from '../fixtures/getAccessToken';
 import { testUser1, testUser2 } from '../fixtures/users';
 import { getUserByUsername, listProjectsByUserId } from '../fixtures/query';
+import { projectSchema } from '../fixtures/schema/schema';
 
 describe('ProjectController (e2e) - get', () => {
   let app: INestApplication;
@@ -26,6 +27,7 @@ describe('ProjectController (e2e) - get', () => {
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(HttpStatus.OK)
         .then((response) => {
+          expect(response.body).toMatchSchema(projectSchema);
           expect(response.body.id).toEqual(project.id);
           expect(response.body.name).toEqual(project.name);
           expect(response.body.owner.id).toEqual(user.id);
