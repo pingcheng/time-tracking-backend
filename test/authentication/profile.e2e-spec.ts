@@ -4,6 +4,7 @@ import { createTestingApp } from '../fixtures/createTestingApp';
 import { getAccessToken } from '../fixtures/getAccessToken';
 import { testUser1 } from '../fixtures/users';
 import { getUserByUsername } from '../fixtures/query';
+import { profileSchema } from '../fixtures/schema/schema';
 
 describe('AuthenticationController (e2e) - profile', () => {
   let app: INestApplication;
@@ -22,11 +23,11 @@ describe('AuthenticationController (e2e) - profile', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(200)
       .then((response) => {
+        expect(response.body).toMatchSchema(profileSchema);
         expect(response.body.id).toEqual(user.id);
         expect(response.body.email).toEqual(user.email);
         expect(response.body.username).toEqual(user.username);
         expect(response.body.name).toEqual(user.name);
-        expect(response.body).not.toHaveProperty('password');
       });
   });
 

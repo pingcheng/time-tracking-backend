@@ -1,0 +1,1 @@
+import './fixtures/matchers/toMatchSchema';
