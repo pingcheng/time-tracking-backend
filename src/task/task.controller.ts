@@ -1,4 +1,5 @@
 import {
+  ClassSerializerInterceptor,
   Controller,
   Get,
   Logger,
@@ -6,11 +7,13 @@ import {
   Param,
   ParseIntPipe,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthenticationGuard } from '../authentication/authentication.guard';
 import { TaskService } from './task.service';
 import { Principal } from '../authentication/decorators/principal.decorator';
 import { User } from '@prisma/client';
+import { TaskEntity } from './entities/task.entity';
 
 @Controller('task')
 export class TaskController {
@@ -22,6 +25,7 @@ export class TaskController {
 
   @Get(':id')
   @UseGuards(AuthenticationGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   async getById(
     @Param('id', ParseIntPipe) id: number,
     @Principal() user: User,
@@ -36,6 +40,6 @@ export class TaskController {
       throw new NotFoundException();
     }
 
-    return task;
+    return new TaskEntity(task);
   }
 }

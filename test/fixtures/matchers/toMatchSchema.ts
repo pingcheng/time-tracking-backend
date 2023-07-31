@@ -19,7 +19,7 @@ export const toMatchSchema: MatcherFunction<[schema: JSONSchemaType<unknown>]> =
         message(): string {
           const errorMessage =
             validate.errors?.map((error) => error.message).join(',') ?? '';
-          return `${errorMessage} for data - ${JSON.stringify(actual)}`;
+          return `${errorMessage}\n\n${JSON.stringify(actual, null, 2)}`;
         },
       };
     }

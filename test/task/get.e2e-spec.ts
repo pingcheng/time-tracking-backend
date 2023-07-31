@@ -4,6 +4,7 @@ import { getAccessToken } from '../fixtures/getAccessToken';
 import { testUser1, testUser2 } from '../fixtures/users';
 import { getUserByUsername, listTasksByUserId } from '../fixtures/query';
 import * as request from 'supertest';
+import { taskSchema } from '../fixtures/schema/schema';
 
 describe('TaskController (e2e) - get', () => {
   let app: INestApplication;
@@ -16,6 +17,20 @@ describe('TaskController (e2e) - get', () => {
   });
 
   describe('/task/:id (GET)', () => {
+    it('should return 401 when not authenticated', async () => {
+      const user = await getUserByUsername(testUser1.username);
+      const tasks = await listTasksByUserId(user.id);
+      const task = tasks[0];
+
+      return request(app.getHttpServer())
+        .get(`/task/${task.id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(HttpStatus.OK)
+        .then((response) => {
+          expect(response.body).toMatchSchema(taskSchema);
+        });
+    });
+
     it('should return 401 when not authenticated', async () => {
       const user = await getUserByUsername(testUser1.username);
       const tasks = await listTasksByUserId(user.id);
