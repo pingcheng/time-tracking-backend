@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+
 const prisma = new PrismaClient();
 
 async function main() {
@@ -17,11 +18,29 @@ async function main() {
 
   // project
   const projectName = 'Get started';
-  await prisma.project.create({
+  const adminProject = await prisma.project.create({
     data: {
       userId: admin.id,
       name: projectName,
     },
+  });
+
+  // task
+  await prisma.task.createMany({
+    data: [
+      {
+        userId: admin.id,
+        projectId: undefined,
+        name: 'Task 1',
+        description: 'Task with no project',
+      },
+      {
+        userId: admin.id,
+        projectId: adminProject.id,
+        name: 'Task 2',
+        description: 'Task with project',
+      },
+    ],
   });
 
   const user = await prisma.user.upsert({

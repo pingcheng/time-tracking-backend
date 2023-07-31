@@ -22,7 +22,7 @@ async function main() {
     },
   });
 
-  await prisma.project.create({
+  const project1 = await prisma.project.create({
     data: {
       userId: user1.id,
       name: 'Project 1',
@@ -41,6 +41,29 @@ async function main() {
       userId: user2.id,
       name: 'Project 3',
     },
+  });
+
+  await prisma.task.createMany({
+    data: [
+      {
+        userId: user1.id,
+        projectId: project1.id,
+        name: 'Task 1',
+        description: 'Task 1, under project',
+      },
+      {
+        userId: user1.id,
+        projectId: undefined,
+        name: 'Task 2',
+        description: 'Task 2, no project',
+      },
+      {
+        userId: user2.id,
+        projectId: undefined,
+        name: 'Task 3',
+        description: 'Task 3, belongs to user 2',
+      },
+    ],
   });
 }
 

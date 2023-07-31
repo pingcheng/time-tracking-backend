@@ -33,3 +33,11 @@ export async function listProjectsByUserId(id: number) {
     },
   });
 }
+
+export async function listTasksByUserId(id: number) {
+  return prismaClient.task.findMany({
+    where: {
+      userId: id,
+    },
+  });
+}

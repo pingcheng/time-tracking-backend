@@ -11,25 +11,41 @@ datasource db {
 }
 
 model User {
-  id         Int       @id @default(autoincrement())
-  email      String    @unique
-  username   String    @unique
-  name       String?
-  password   String?
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  username  String    @unique
+  name      String?
+  password  String?
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 
   // relations
-  Project    Project[]
+  Project Project[]
+  Task    Task[]
 }
 
 model Project {
-  id         Int       @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   userId    Int
-  name       String
+  name      String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 
   // relations
-  owner User @relation(fields: [userId], references: [id])
+  owner User   @relation(fields: [userId], references: [id])
+  Task  Task[]
+}
+
+model Task {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  projectId   Int?
+  name        String
+  description String    @default("")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+
+  // relations
+  owner   User     @relation(fields: [userId], references: [id])
+  project Project? @relation(fields: [projectId], references: [id])
 }
