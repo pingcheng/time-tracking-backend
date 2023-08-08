@@ -1,4 +1,5 @@
 import {
+  Body,
   ClassSerializerInterceptor,
   Controller,
   Get,
@@ -6,6 +7,7 @@ import {
   NotFoundException,
   Param,
   ParseIntPipe,
+  Post,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -14,6 +16,7 @@ import { TaskService } from './task.service';
 import { Principal } from '../authentication/decorators/principal.decorator';
 import { User } from '@prisma/client';
 import { TaskEntity } from './entities/task.entity';
+import { CreateTaskDto } from './validators/CreateTaskDto';
 
 @Controller('task')
 export class TaskController {
@@ -39,6 +42,19 @@ export class TaskController {
     if (task.owner.id !== user.id) {
       throw new NotFoundException();
     }
+
+    return new TaskEntity(task);
+  }
+
+  @Post('/')
+  @UseGuards(AuthenticationGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  async create(@Principal() user: User, @Body() createTaskDto: CreateTaskDto) {
+    const task = await this.taskService.create({
+      userId: user.id,
+      name: createTaskDto.name,
+      description: createTaskDto.description,
+    });
 
     return new TaskEntity(task);
   }
