@@ -5,7 +5,7 @@ interface HasOwner {
 }
 
 interface HasProject {
-  project: Project;
+  project: Project | null;
 }
 
 interface Profile {
@@ -28,7 +28,6 @@ interface Task {
   description: string;
   createdAt: string;
   updatedAt: string;
-  project: Project;
 }
 
 export const profileSchema: JSONSchemaType<Profile> = {
@@ -76,6 +75,7 @@ export const taskSchema: JSONSchemaType<Task & HasOwner & HasProject> = {
     owner: profileSchema,
     project: {
       type: 'object',
+      nullable: true,
       required: ['id', 'name', 'createdAt', 'updatedAt'],
       properties: {
         id: { type: 'integer' },
