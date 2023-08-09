@@ -19,6 +19,9 @@ import { inRange } from '../utils/inRange';
 import { Principal } from '../authentication/decorators/principal.decorator';
 import { User } from '@prisma/client';
 import { CreateProjectDto } from './validators/CreateProjectDto';
+import { TaskService } from '../task/task.service';
+import { CreateTaskDto } from '../task/validators/CreateTaskDto';
+import { TaskEntity } from '../task/entities/task.entity';
 
 @Controller('project')
 export class ProjectController {
@@ -26,7 +29,10 @@ export class ProjectController {
 
   private readonly logger: Logger;
 
-  constructor(private readonly projectService: ProjectService) {
+  constructor(
+    private readonly projectService: ProjectService,
+    private readonly taskService: TaskService,
+  ) {
     this.logger = new Logger(ProjectController.name);
   }
 
@@ -84,5 +90,28 @@ export class ProjectController {
     });
 
     return new ProjectEntity(project);
+  }
+
+  @Post('/:id/task')
+  @UseGuards(AuthenticationGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  async createTask(
+    @Principal() { id: userId }: User,
+    @Param('id', ParseIntPipe) projectId: number,
+    @Body() { name, description }: CreateTaskDto,
+  ) {
+    const project = await this.projectService.findById(projectId);
+
+    if (!project) throw new NotFoundException();
+    if (project.owner.id !== userId) throw new NotFoundException();
+
+    const task = await this.taskService.create({
+      name,
+      description,
+      userId,
+      projectId,
+    });
+
+    return new TaskEntity(task);
   }
 }
