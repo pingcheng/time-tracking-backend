@@ -41,3 +41,11 @@ export async function listTasksByUserId(id: number) {
     },
   });
 }
+
+export async function getTaskById(id: number) {
+  return prismaClient.task.findUnique({
+    where: {
+      id,
+    },
+  });
+}

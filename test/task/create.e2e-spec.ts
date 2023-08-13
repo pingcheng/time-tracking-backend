@@ -5,6 +5,7 @@ import { testUser1 } from '../fixtures/users';
 import * as request from 'supertest';
 import { taskSchema } from '../fixtures/schema/schema';
 import { getUserByUsername } from '../fixtures/query';
+import { Project, User } from '@prisma/client';
 
 describe('TaskController (e2e) - create', () => {
   let app: INestApplication;
@@ -39,13 +40,59 @@ describe('TaskController (e2e) - create', () => {
         .expect(HttpStatus.CREATED)
         .then((response) => {
           expect(response.body).toMatchSchema(taskSchema);
-          expect(response.body.name).toEqual(name);
-          expect(response.body.description).toEqual(description);
-          expect(response.body.project).toBeNull();
-          expect(response.body.owner.id).toEqual(user.id);
-          expect(response.body.owner.name).toEqual(user.name);
-          expect(response.body.owner.email).toEqual(user.email);
+          validateTaskPayload(response.body, {
+            name,
+            description,
+            user,
+            project: null,
+          });
+        });
+    });
+
+    it('should return 201 when task is created, with no description', async () => {
+      const user = await getUserByUsername(testUser1.username);
+      const name = 'Task from e2e create';
+
+      return request(app.getHttpServer())
+        .post('/task')
+        .set(`Authorization`, `Bearer ${accessToken}`)
+        .send({
+          name,
+        })
+        .expect(HttpStatus.CREATED)
+        .then((response) => {
+          expect(response.body).toMatchSchema(taskSchema);
+          validateTaskPayload(response.body, {
+            name,
+            description: '',
+            user,
+            project: null,
+          });
         });
     });
   });
 });
+
+type ValidateTaskPayloadOptions = {
+  name: string;
+  description: string;
+  user: User;
+  project: Project | null;
+};
+function validateTaskPayload(
+  body: any,
+  { name, description, user, project }: ValidateTaskPayloadOptions,
+) {
+  expect(body.name).toEqual(name);
+  expect(body.description).toEqual(description);
+  expect(body.owner.id).toEqual(user.id);
+  expect(body.owner.name).toEqual(user.name);
+  expect(body.owner.email).toEqual(user.email);
+
+  if (project) {
+    expect(body.project.id).toEqual(project.id);
+    expect(body.project.name).toEqual(project.name);
+  } else {
+    expect(body.project).toBeNull();
+  }
+}

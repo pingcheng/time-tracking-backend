@@ -27,7 +27,7 @@ export class TaskService {
     return this.prismaService.task.create({
       data: {
         name: dto.name,
-        description: dto.description,
+        description: dto.description ?? '',
         userId: dto.userId,
         projectId: dto.projectId,
       },
