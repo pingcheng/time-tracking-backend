@@ -4,7 +4,7 @@ import { getAccessToken } from '../fixtures/getAccessToken';
 import { testUser1 } from '../fixtures/users';
 import * as request from 'supertest';
 import { taskSchema } from '../fixtures/schema/schema';
-import { getUserByUsername } from '../fixtures/query';
+import { getUserByUsername, listProjectsByUserId } from '../fixtures/query';
 import { Project, User } from '@prisma/client';
 
 describe('TaskController (e2e) - create', () => {
@@ -67,6 +67,30 @@ describe('TaskController (e2e) - create', () => {
             description: '',
             user,
             project: null,
+          });
+        });
+    });
+
+    it('should return 201 when task is created, under a project', async () => {
+      const user = await getUserByUsername(testUser1.username);
+      const name = 'Task from e2e create';
+      const projects = await listProjectsByUserId(user.id);
+      const project = projects[0];
+
+      return request(app.getHttpServer())
+        .post(`/project/${project.id}/task`)
+        .set(`Authorization`, `Bearer ${accessToken}`)
+        .send({
+          name,
+        })
+        .expect(HttpStatus.CREATED)
+        .then((response) => {
+          expect(response.body).toMatchSchema(taskSchema);
+          validateTaskPayload(response.body, {
+            name,
+            description: '',
+            user,
+            project,
           });
         });
     });
