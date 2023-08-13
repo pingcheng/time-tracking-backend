@@ -61,6 +61,14 @@ export class ProjectService {
       },
     });
   }
+
+  async deleteById(id: number) {
+    return this.prismaService.project.delete({
+      where: {
+        id,
+      },
+    });
+  }
 }
 
 export type QueryByUserOptions = {

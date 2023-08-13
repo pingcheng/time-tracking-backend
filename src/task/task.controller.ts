@@ -2,6 +2,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
   Logger,
   NotFoundException,
@@ -55,6 +56,31 @@ export class TaskController {
       name: createTaskDto.name,
       description: createTaskDto.description,
     });
+
+    return new TaskEntity(task);
+  }
+
+  @Get('/')
+  @UseGuards(AuthenticationGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  async list(@Principal() { id: userId }: User) {
+    const tasks = await this.taskService.list({
+      userId,
+    });
+
+    return tasks.map((task) => new TaskEntity(task));
+  }
+
+  @Delete('/:id')
+  @UseGuards(AuthenticationGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  async delete(@Principal() user: User, @Param('id', ParseIntPipe) id: number) {
+    const task = await this.taskService.findById(id);
+
+    if (!task) throw new NotFoundException();
+    if (task.owner.id !== user.id) throw new NotFoundException();
+
+    await this.taskService.delete(id);
 
     return new TaskEntity(task);
   }

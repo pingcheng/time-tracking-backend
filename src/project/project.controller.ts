@@ -2,6 +2,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
   Logger,
   NotFoundException,
@@ -113,5 +114,21 @@ export class ProjectController {
     });
 
     return new TaskEntity(task);
+  }
+
+  @Delete('/:id')
+  @UseGuards(AuthenticationGuard)
+  async delete(
+    @Principal() { id: userId }: User,
+    @Param('id', ParseIntPipe) projectId: number,
+  ) {
+    const project = await this.projectService.findById(projectId);
+
+    if (!project) throw new NotFoundException();
+    if (project.owner.id !== userId) throw new NotFoundException();
+
+    await this.projectService.deleteById(projectId);
+
+    return new ProjectEntity(project);
   }
 }

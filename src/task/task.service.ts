@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTaskDto } from './task.type';
+import { PaginationOptions } from '../project/project.service';
 
 @Injectable()
 export class TaskService {
@@ -36,4 +37,43 @@ export class TaskService {
       },
     });
   }
+
+  async list({
+    userId,
+    projectId,
+    pagination: { skip, take } = {
+      skip: undefined,
+      take: 10,
+    },
+  }: ListOptions) {
+    return this.prismaService.task.findMany({
+      where: {
+        userId,
+        projectId,
+      },
+      skip,
+      take,
+      orderBy: {
+        id: 'desc',
+      },
+      include: {
+        project: true,
+        owner: true,
+      },
+    });
+  }
+
+  async delete(id: number) {
+    return this.prismaService.task.delete({
+      where: {
+        id,
+      },
+    });
+  }
 }
+
+export type ListOptions = {
+  userId?: number;
+  projectId?: number;
+  pagination?: PaginationOptions;
+};
